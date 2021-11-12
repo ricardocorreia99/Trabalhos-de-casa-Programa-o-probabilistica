@@ -1,0 +1,403 @@
+Pergunta 1.1:
+
+~~~~
+var lança_moedas=function(x){
+  return function(){
+    return flip(x)
+  }
+}
+
+var moeda=lança_moedas(0.5)
+var n=3
+var list_moedas=repeat(n,moeda)
+var n_moedas=sum(list_moedas)
+console.log(list_moedas)
+console.log(n_moedas)
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 1.2
+
+~~~~
+var lança_moedas=function(x){
+  return function(){
+    return flip(x)
+  }
+}
+
+var moeda=lança_moedas(0.5)
+var n=3
+var list_moedas=repeat(n,moeda)
+console.log(list_moedas)
+
+var verifica=function(lista){
+  if(sum(lista)>0){
+    return "False"
+  }
+  else{
+    return "True"
+  }
+}
+
+var se_é_td_coroa=verifica(list_moedas)
+
+console.log(se_é_td_coroa)
+~~~~
+
+
+
+
+
+Pergunta 1.3:
+
+~~~~
+// do que percebi, deve retornar true se for tudo verdadeiro ou tudo falso
+
+var lança_moedas=function(x){
+  return function(){
+    return flip(x)
+  }
+}
+
+var moeda=lança_moedas(0.5)
+var n=3
+var list_moedas=repeat(n,moeda)
+console.log(list_moedas)
+
+var verifica=function(lista,n){
+  if((sum(lista)==n)||(sum(lista)==0)){
+    return "True"
+  }
+  else{
+    return "False"
+  }
+}
+
+var se_é_td_coroa_ou_cara=verifica(list_moedas,n)
+
+console.log(se_é_td_coroa_ou_cara)
+~~~~
+
+Pergunta 2:
+
+~~~~
+var lança_moedas= function(){
+    return flip()
+  }
+
+
+
+var list_moedas=repeat(1000,lança_moedas)
+//console.log(list_moedas)
+viz.hist(list_moedas)
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 3:
+
+~~~~
+var lança_moedas= function(x){
+  return function(){
+    return flip(x)
+  }
+}
+
+var moeda=lança_moedas(0.6)
+
+
+var list_moedas=repeat(1000,moeda)
+//console.log(list_moedas)
+viz.hist(list_moedas)
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 4.1:
+
+~~~~
+var lança_moedas= function(x){
+  return function(){
+    return flip(x)+flip(x)+flip(x)+flip(x)+flip(x)
+  }
+}
+
+var moeda=lança_moedas(0.6)
+
+
+var list_moedas=repeat(10,moeda)
+console.log(list_moedas)
+viz(list_moedas)
+viz.hist(list_moedas)
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 4.2:
+
+~~~~
+var lança_moedas= function(x){
+  return function(){
+    return binomial({p:x,n:5})
+  }
+}
+
+var moeda=lança_moedas(0.6)
+
+
+var list_moedas=repeat(10,moeda)
+console.log(list_moedas)
+viz(list_moedas)
+viz.hist(list_moedas)
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 5:
+
+~~~~
+var prob_face_dado=function(n){
+  return function(){
+    return 1/n
+  }
+}
+var lança_dado=function(nr){
+  return function(){
+    return categorical({ps:repeat(nr,prob_face_dado(nr)),vs:[1,2,3,4,5,6]})
+  }
+}
+
+var dado=lança_dado(6)
+
+var rep=repeat(1000,dado)
+
+//console.log(rep)
+viz(rep,{xLabel:"face do dado"})
+
+viz.hist(rep,{xLabel:"face do dado"})
+~~~~
+
+
+
+
+
+
+
+
+
+Pergunta 6:
+
+~~~~
+var prob_face_dado=function(n){
+  return function(){
+    return 1/n
+  }
+}
+var lança_dado=function(){
+    return categorical({ps:repeat(6,prob_face_dado(6)),vs:[1,2,3,4,5,6]})
+}
+
+var lança_n_dados=function(n){
+  return function(){
+    return repeat(n,lança_dado)
+  }
+}
+
+// lançar 2 dados de cada vez ( considerando que a ordem com que aparece os numeros importa)
+var ndado=lança_n_dados(2)
+
+var rep=repeat(1000,ndado)
+//console.log(rep)
+viz.hist(rep)
+
+// lançar 2 dados de cada vez ( considerando que a ordem com que aparece os numeros não importa)
+// se não importa, então sair o 1 e depois o 3 , é igual a sair um 3 e depois um 1.
+// como os dados á partida são iguais, então este metodo parece ser o mais correto:
+
+// função responsável por reestruturar sublistas, ou seja, a rep terá imensas sublistas, mas vamos 
+// considerar que rep=[[1,2],[2,1]], se aplicar o viz.hist a isto ele vai diferenciar isso, então
+// para evitar isso, vai-se criar uma função que reestrutura sublistas, ficando assim:[[1,2],[1,2]]
+var restrutura_sublistas=function(lista){
+    return sort(lista) // sort ordena a lista e retorna a lista ordenada
+  
+}              
+
+var lista_restruturada=map(restrutura_sublistas,rep)
+//console.log(lista_restruturada)
+viz.hist(lista_restruturada)
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 7:
+
+~~~~
+// considerações:
+// existe estes tipos de cartas(cartas mais tipicas): 2,3,4,5,6,7,8,9,10,dama,valete,rei,ás
+// e casa carta tem associada a sí 4 naipes: copas,espadas,ouros,paus
+// ao todo á 52 cartas
+// a minha estatégia consiste em sortear o tipo de carta e também o naipe
+// a probailidade de cada carta é 1/13, para todas
+// a probabilidade de cada naipe é 1/4
+
+var rep1_13=function(){
+  return 1/13
+}
+var sorteio_tipo_carta=function(){
+  return categorical({ps:repeat(13,rep1_13), vs:['2','3','4','5','6','7','8','9','10','dama','valete','rei','ás']})
+}
+
+var carta=sorteio_tipo_carta()
+
+var sorteio_naipe=function(){
+  return categorical({ps:[1/4,1/4,1/4,1/4], vs:['copas','ouros','espadas','paus']})
+}
+var naipe=sorteio_naipe()
+var carta_naipe=[carta,naipe]
+console.log("carta:",carta_naipe[0],carta_naipe[1])
+~~~~
+
+
+
+
+Pergunta 8:
+
+~~~~
+// agora tenho de sortear uma mão de n cartas
+// não pode haver cartas repetidas, por isso tem 
+
+var rep1_n=function(n){
+  return function() {
+    return 1/n
+  }
+}
+
+// função que recebe um baralho, o numero de cartas desse baralho, e o numero de cartas que vamos escolher para a mão
+// retorna a lista das n cartas que vão para a mão
+var sorteio_mão_de_cartas=function(baralho,n_cartas,n_mão){
+    
+ if(n_mão>52){
+   console.log("inválido, não se pode escolher mais cartas do que as que existem")
+   return baralho
+ }
+  else {
+    if(n_mão==0){
+      // se não quero cartas na mão então não escolho nada
+      return []
+    }else{
+      
+      // probabilidade de sair uma carta do baralho que tenho
+      var prob=rep1_n(n_cartas)
+      //console.log("prob:",prob())
+      
+      // escolho a carta do baralho
+      var carta=categorical({ps:repeat(n_cartas,prob), vs:baralho})
+       //console.log("carta:",carta)
+      
+      // removo a carta do baralho
+      var baralho_novo=remove(carta,baralho)
+       //console.log("baralho:",baralho_novo)
+      
+      // tiro um ao numero de cartas pois tirei uma carta
+      var n_cartas2=n_cartas-1
+       //console.log("n_cartas:",n_cartas2)
+      
+      // tiro um ao numero de cartas que quero na mão pois já escolhi uma carta
+      var n_mão2=n_mão-1
+       //console.log("n_mão2:",n_mão2)
+      
+      // a minha mão irá ter essa carta + as restantes que vou escolher
+      var mão2=[carta].concat(sorteio_mão_de_cartas(baralho_novo,n_cartas2,n_mão2))
+       //console.log("mão2:",mão2)
+      return mão2
+      
+    }
+  
+  }
+
+}
+var baralhocompleto=[['2 copas'],['2 ouros'],['2 espadas'],['2 paus'],['3 copas'],['3 ouros'],['3 espadas'],['3 paus'],['4 copas'],['4 ouros'],['4 espadas'],['4 paus'],['5 copas'],['5 ouros'],['5 espadas'],['5 paus'],['6 copas'],['6 ouros'],['6 espadas'],['6 paus'],['7 copas'],['7 ouros'],['7 espadas'],['7 paus'],['8 copas'],['8 ouros'],['8 espadas'],['8 paus'],['9 copas'],['9 ouros'],['9 espadas'],['9 paus'],['10 copas'],['10 ouros'],['10 espadas'],['10 paus'],['dama copas'],['dama ouros'],['dama espadas'],['dama paus'],['valete copas'],['valete ouros'],['valete espadas'],['valete paus'],['rei copas'],['rei ouros'],['rei espadas'],['rei paus'],['ás copas'],['ás ouros'],['ás espadas'],['ás paus']]
+
+var n_mão=5
+var n_cartas=52
+
+var mão_de_cartas=sorteio_mão_de_cartas(baralhocompleto,n_cartas,n_mão)
+ console.log("mão de cartas:",mão_de_cartas)
+~~~~

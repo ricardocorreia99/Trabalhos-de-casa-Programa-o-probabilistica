@@ -1,0 +1,541 @@
+Pergunta 1:
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+var inc = function(x) { return x + 1 }
+
+//retorna a soma de uma lista ne ndados lançados com nfaces  em que cada elemento correpsonde ao numero de vezes que saiu cada face
+// no 5D2 , se sair [3,2] quer dizer que saiu 3 1's e 2 2's e a soma é 7
+var modelo1=function(ndados,nfaces){
+  return function(){
+    var list= multinomial({ps:repeat(nfaces,probface(nfaces)),n:ndados}) 
+    return sum(mapIndexed(function(indice,valor){return (indice+1)*valor},list)) //aplica a função na qual o primeiro elemento é o indice da list e o outro é o valor
+  }
+}
+
+//podia-se usar a multinumial
+
+var cincoDdois=modelo1(5,2)  
+var quatroDseis=modelo1(4,6)
+var doisDcem=modelo1(2,100)
+var cemDdois=modelo1(100,2)
+
+viz(repeat(10000,cincoDdois))
+//viz(repeat(10000,quatroDseis))
+//viz(repeat(10000,doisDcem))
+//viz(repeat(10000,cemDdois))
+
+
+Pergunta 2:
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+var inc = function(x) { return x + 1 }
+
+// esta função remove as repetições, pois se houver uma vez a face (1) ou nenhuma(0), tudo bem, mas mais vezes tem de retornar apenas 1 vez
+var filtra=function(elem){
+   return (elem==1 || elem==0) ? elem:1
+}
+
+var modelo2=function(ndados,nfaces){
+  return function(){
+    var list= multinomial({ps:repeat(nfaces,probface(nfaces)),n:ndados}) 
+    var list2=map(filtra,list)
+    return sum(mapIndexed(function(indice,valor){return (indice+1)*valor},list2))
+  }
+
+}
+
+
+
+var cincoDdois=modelo2(5,2)  
+var quatroDseis=modelo2(4,6)
+var doisDcem=modelo2(2,100)
+var cemDdois=modelo2(100,2)
+
+viz(repeat(10000,cincoDdois))
+viz(repeat(10000,quatroDseis))
+viz(repeat(10000,doisDcem))
+viz(repeat(10000,cemDdois))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 3:
+
+
+// no rolled and kipt, os dados são todos de 10 faces
+// atiro x dados e fico com os y maiores
+// se sair 10, lanço outra vez e somo 10 aos resultado que lançar
+// somos os y valores mais altos
+
+
+// esta vai servir para um repeat mais abaixo, nada mais que isso
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+//lança um dado apenas e retorna o valor dele
+var lancar_1_dado=function(){
+  return categorical({ps:repeat(10,probface(10)),vs:[1,2,3,4,5,6,7,8,9,10]})
+}
+
+// esta lança x dados e retorna uma lista com o que saiu em cada lançamento
+var lancar_n_dados=function(x){
+    return repeat(x,lancar_1_dado)
+  
+}
+
+// serve para ser usada mais abaixo, coloca o primeiro elemento de um array a 0, mantendo os restantes
+var passa_0_ao_primeiro_elem=function(i,v){
+  if(i==0){return 0}
+  else{ return v}
+}
+
+// cria uma lista com os y maiores, de notar que list tem de vir odenada do maior para o menor
+var retira_y_maiores=function(y,list){
+  if(y==0){
+    return []
+  }
+  else{
+    var listy=[list[0]]
+    var newlist1=mapIndexed(passa_0_ao_primeiro_elem,list) // coloca o primeiro elemento a 0
+    var newlist2=sort(newlist1,gt) // ordeno novamente a lista, de forma a mandar o 0 para o fim da fila
+    return listy.concat(retira_y_maiores(y-1,newlist2))
+  }
+  
+}
+
+//dado um valor, caso seja 10 torna a lançar o dado e soma 10 ao dado que sair
+var tratar_dos_10=function(x){
+  if(x!=10){
+    return x
+  }
+  else{
+    var novodado=lancar_1_dado()
+   console.log("novo lancamento:",novodado)
+    var res=10+tratar_dos_10(novodado)
+    return res
+  }
+}
+
+
+// função base, esta junta todas as peças que criei antes
+var retiramaiores=function(x,y){
+  return function(){
+    var values=lancar_n_dados(x) // lanço x dados
+    console.log("lista:",values)
+    var sortvalues=sort(values,gt) // ordena a lista do maior para o menor
+    console.log("lista ordenada:",sortvalues)
+    
+    var ymaiores=retira_y_maiores(y,sortvalues) // retira os y maiores elementos, sendo a lista organizada do maior para o menor
+    console.log("os y maiores numeros:",ymaiores)
+    
+    var total=map(tratar_dos_10,ymaiores) // caso saia algum 10, lança de novo e incrementa
+    console.log("tratar os casos que tem 10:",total)
+    
+    console.log("resultado:",sum(total))
+    
+    return sum(total) // retorno a soma de toda a lista de y maiores
+  }
+}
+
+var umkum=retiramaiores(1,1)
+var treskum=retiramaiores(3,1)
+var cincokum=retiramaiores(5,1)
+var setekdois=retiramaiores(7,2)
+var novekquatro=retiramaiores(9,4)
+//var x=retiramaiores(3,1)
+//console.log(x())
+viz(repeat(10000,umkum))
+//viz(repeat(10000,treskum))
+//viz(repeat(10000,cincokum))
+//viz(repeat(10000,setekdois))
+//viz(repeat(10000,novekquatro))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pergunta 4:
+// o que percebi disto foi o seguinte
+// lanço um x numero de dados(10 faces)
+// é estabelecido um TN
+// os sucessos são o nº de dados >=TN
+// os 1´s são insucessos 
+// subtrai-se os insucessos aos sucessos
+// e está
+
+// esta vai servir para um repeat mais abaixo, nada mais que isso
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+//lança um dado apenas e retorna o valor dele
+var lancar_1_dado=function(){
+  return categorical({ps:repeat(10,probface(10)),vs:[1,2,3,4,5,6,7,8,9,10]})
+}
+
+// esta lança x dados e retorna uma lista com o que saiu em cada lançamento
+var lancar_n_dados=function(x){
+    return repeat(x,lancar_1_dado)
+  
+}
+
+// se x for um sucesso então retorna 1, se for insussso -1 e se não for nada sera 0
+var count=function(x,TN){
+ var x=(x>=TN)? 1:(x==1?-1:0)
+ return x
+}
+
+// serve só para poder fazer um repeat..
+var retornaTN=function(TN){
+  return function(){return TN}
+}
+
+var sucessVSinsucess=function(x,TN){
+  return function(){
+    var dados=lancar_n_dados(x)
+    console.log("dados:",dados)
+   
+    var sucess=map2(count,dados,repeat(x,retornaTN(TN)))
+    console.log("sucessos:",sucess)
+    return sum(sucess)
+  }
+}
+var dezW5=sucessVSinsucess(10,5)
+var dezW8=sucessVSinsucess(10,8)
+var cemW5=sucessVSinsucess(100,5)
+var cemW8=sucessVSinsucess(100,8)
+
+//dezW5()
+//viz(Infer(dezW5))
+//viz(repeat(10000,dezW5))
+//viz(repeat(10000, dezW8))
+//viz(repeat(10000, cemW5))
+//viz(Infer(cemW5))
+//viz(repeat(10000, cemW8))
+
+
+Pergunta 5
+// esta vai servir para um repeat mais abaixo, nada mais que isso
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+//lança um dado apenas e retorna o valor dele
+var lancar_1_dado=function(){
+  return categorical({ps:repeat(10,probface(10)),vs:[1,2,3,4,5,6,7,8,9,10]})
+}
+
+// esta lança x dados e retorna uma lista com o que saiu em cada lançamento
+var lancar_n_dados=function(x){
+    return repeat(x,lancar_1_dado)
+  
+}
+
+// se x for um sucesso então retorna 1, se for insussso -1 e se não for nada sera 0
+var count=function(x,TN){
+ var x=(x>=TN)? 1:(x==1?-1:0)
+ return x
+}
+
+// serve só para poder fazer um repeat..
+var retornaTN=function(TN){
+  return function(){return TN}
+}
+
+
+//função que retorna [numero de sucessos,TN], para um dado TN, escolhido de forma random dentro da função
+var randomTN=function(){
+  var x=randomInteger(9)+2 // valor random do TN
+  //console.log("TN:",x)
+  var dados=lancar_n_dados(10)
+  //console.log("dados:",dados)
+   
+  var sucess=map2(count,dados,repeat(10,retornaTN(x)))
+  //console.log("sucessos:",sucess)
+  return [sum(sucess),x]
+  
+}
+var x=randomTN()
+x
+viz.heatMap(Infer(randomTN))
+
+Pergunta 6
+// numero de dados VS numero de sucessos
+// TN fixo em 9
+// irei lançar de 1 a 10 dados, como não existia um limite então decidi fazer assim, mas seria só alterar
+
+// esta vai servir para um repeat mais abaixo, nada mais que isso
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+//lança um dado apenas e retorna o valor dele
+var lancar_1_dado=function(){
+  return categorical({ps:repeat(10,probface(10)),vs:[1,2,3,4,5,6,7,8,9,10]})
+}
+
+// esta lança x dados e retorna uma lista com o que saiu em cada lançamento
+var lancar_n_dados=function(x){
+    return repeat(x,lancar_1_dado)
+  
+}
+
+// se x for um sucesso então retorna 1, se for insussso -1 e se não for nada sera 0
+var count=function(x,TN){
+ var x=(x>=TN)? 1:(x==1?-1:0)
+ return x
+}
+
+// serve só para poder fazer um repeat..
+var retornaTN=function(TN){
+  return function(){return TN}
+}
+
+
+//função que retorna [numero de dados,numero de sucessos], para um TN=9, na qual o numero de dados é escolhido de forma random
+var random_n_dados=function(){
+  var n_dados=randomInteger(10)+1 // valor random do numero de dados
+  //console.log("n_dados:",n_dados)
+  var dados=lancar_n_dados(n_dados)
+  //console.log("dados:",dados)
+   
+  var sucess=map2(count,dados,repeat(10,retornaTN(9)))
+  //console.log("sucessos:",sucess)
+  return [n_dados,sum(sucess)]
+  
+}
+
+viz.heatMap(Infer(random_n_dados))
+
+Pergunta 7
+
+// quem conseguir obter o maior valor ganha
+// irei jogar com dois jogadores e tentar ver como pequenas diferenças no X e Y podem influenciar as vitorias
+
+// copiei o exercicio 3 para aqui
+
+// esta vai servir para um repeat mais abaixo, nada mais que isso
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+//lança um dado apenas e retorna o valor dele
+var lancar_1_dado=function(){
+  return categorical({ps:repeat(10,probface(10)),vs:[1,2,3,4,5,6,7,8,9,10]})
+}
+
+// esta lança x dados e retorna uma lista com o que saiu em cada lançamento
+var lancar_n_dados=function(x){
+    return repeat(x,lancar_1_dado)
+  
+}
+
+// serve para ser usada mais abaixo, coloca o primeiro elemento de um array a 0, mantendo os restantes
+var passa_0_ao_primeiro_elem=function(i,v){
+  if(i==0){return 0}
+  else{ return v}
+}
+
+// cria uma lista com os y maiores, de notar que list tem de vir odenada do maior para o menor
+var retira_y_maiores=function(y,list){
+  if(y==0){
+    return []
+  }
+  else{
+    var listy=[list[0]]
+    var newlist1=mapIndexed(passa_0_ao_primeiro_elem,list) // coloca o primeiro elemento a 0
+    var newlist2=sort(newlist1,gt) // ordeno novamente a lista, de forma a mandar o 0 para o fim da fila
+    return listy.concat(retira_y_maiores(y-1,newlist2))
+  }
+  
+}
+
+//dado um valor, caso seja 10 torna a lançar o dado e soma 10 ao dado que sair
+var tratar_dos_10=function(x){
+  if(x!=10){
+    return x
+  }
+  else{
+    var novodado=lancar_1_dado()
+   //console.log("novo lancamento:",novodado)
+    var res=10+tratar_dos_10(novodado)
+    return res
+  }
+}
+
+
+// função base, esta junta todas as peças que criei antes
+var roolANDKeep=function(x,y){
+    var values=lancar_n_dados(x) // lanço x dados
+    //console.log("lista:",values)
+    var sortvalues=sort(values,gt) // ordena a lista do maior para o menor
+    //console.log("lista ordenada:",sortvalues)
+    
+    var ymaiores=retira_y_maiores(y,sortvalues) // retira os y maiores elementos, sendo a lista organizada do maior para o menor
+    //console.log("os y maiores numeros:",ymaiores)
+    
+    var total=map(tratar_dos_10,ymaiores) // caso saia algum 10, lança de novo e incrementa
+    //console.log("tratar os casos que tem 10:",total)
+    
+   // console.log("resultado:",sum(total))
+    
+    return sum(total) // retorno a soma de toda a lista de y maiores
+  
+}
+
+var um_contra_um=function(x1,y1,x2,y2){
+  return function(){
+  var jogador1=roolANDKeep(x1,y1)
+  //console.log(jogador1)
+  
+  var jogador2=roolANDKeep(x2,y2)
+  //console.log(jogador2)
+  
+  var vencedor=(jogador1>jogador2)?1:((jogador2>jogador1)? 2:0)
+  //console.log("vencedor:",vencedor)
+  return vencedor
+  }
+}
+
+var dez_3VSdez_4=um_contra_um(10,3,10,4)
+//dez_3VSdez_4()
+viz(Infer(dez_3VSdez_4))  // aqui vejo que para o mesmo numero de dados lançados, quem tira mais tem mais chances de vencer
+
+
+var cinco_3VScinco_4=um_contra_um(5,3,5,4) // aqui vejo que para o mesmo numero de dados lançados, quem tira mais tem mais chances de vencer
+//viz(Infer(cinco_3VScinco_4))
+
+
+var quatro_4VScinco_3=um_contra_um(4,4,5,3) // aqui analiso a relação de lançar menos um dado e tirar um a mais e lançar mais um dado e tirar um a menos
+viz(Infer(quatro_4VScinco_3)) //verifico que o jogador que lança um a mais e tira um a mais custuma sair ligeiramente mais vantajoso
+
+var dez_1VStres_2=um_contra_um(10,1,3,2) // e qual compensa mais ? lançar 10 dados e tirar 1 ou lançar 3 dados e tirar 2?
+viz(Infer(dez_1VStres_2)) // verifico que lançar 3 e tirar 2 é mais vantajoso
+
+Pergunta 8:
+// agora copio a 4:
+
+// esta vai servir para um repeat mais abaixo, nada mais que isso
+var probface=function(n){
+  return function(){
+    return 1/n
+  }
+}
+
+//lança um dado apenas e retorna o valor dele
+var lancar_1_dado=function(){
+  return categorical({ps:repeat(10,probface(10)),vs:[1,2,3,4,5,6,7,8,9,10]})
+}
+
+// esta lança x dados e retorna uma lista com o que saiu em cada lançamento
+var lancar_n_dados=function(x){
+    return repeat(x,lancar_1_dado)
+  
+}
+
+// se x for um sucesso então retorna 1, se for insussso -1 e se não for nada sera 0
+var count=function(x,TN){
+ var x=(x>=TN)? 1:(x==1?-1:0)
+ return x
+}
+
+// serve só para poder fazer um repeat..
+var retornaTN=function(TN){
+  return function(){return TN}
+}
+
+var WoD=function(x,TN){
+  
+    var dados=lancar_n_dados(x)
+    //console.log("dados:",dados)
+   
+    var sucess=map2(count,dados,repeat(x,retornaTN(TN)))
+    //console.log("sucessos:",sucess)
+    return sum(sucess)
+  
+}
+
+var umVSum=function(x1,x2,TN) {
+  return function(){
+    var jogador1=WoD(x1,TN)
+    //console.log("jogador1:",jogador1)
+    var jogador2=WoD(x2,TN)
+    //console.log("jogador2:",jogador2)
+    
+    var vencedor=(jogador1>jogador2)?1:((jogador2>jogador1)? 2:0)
+   // console.log(vencedor)
+    return vencedor
+    
+  }
+}
+
+var dez_doze_5=umVSum(10,12,5) // aqui como é obvio, quem lança mais dados tem mais chances de vencer, independente do TN
+viz(Infer(dez_doze_5))
+//dez_doze_5()
+
+var dez_doze_9=umVSum(10,12,9)
+viz(Infer(dez_doze_9))

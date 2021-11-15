@@ -77,7 +77,6 @@ viz.table(Infer(x))
 
 Pergunta 3:
 
-~~~~
 // apartir desta pergunta as minhas varaiveis são true e false, por uma questão de ligibilidade
 // mas por exemplo no testeA, faz exatamente o que se fez na pergunta 1, apenas evitei retornar 'Deu positivo' e 'Deu negativo' para True e False respetivamente
 
@@ -90,11 +89,11 @@ var modelo3=function(){
 }
 
 viz.table(Infer(modelo3))
-~~~~
+
 
 Pergunta 4.1
 
-~~~~
+
 var modelo4_1=function(){
   var covid=flip(0.01) // probabilidade de ter covid na população é 1%
   var testeB= covid ?flip(0.9):flip(0.01)

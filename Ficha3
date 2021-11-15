@@ -1,0 +1,140 @@
+Pergunta 1
+
+
+// temos 1% da população com covid
+// 70% das que fizeram covid fizeram um teste rápido e tem covid
+// 10% dos que fizeram o teste rápido não têm covid. (erro no teste)
+
+var model_A=function(){
+  return function(){
+    var prob_ter_covid_população=flip(0.01) // probabilidade de ter covid na população é 1%
+
+    // de seguida vou testar se o sujeeito tem covid, quando tem 70% deu positivo e tem covid e 30% tem covid e deu negativo, dos que não tem covid 10%  deu positivo e os outros 90% deu negativo e não tem covid
+    var teste= prob_ter_covid_população ?(flip(0.7)? 'Deu positivo':'Deu negativo'):(flip(0.1)? 'Deu positivo':'Deu negativo' )
+    
+   // só pretendo retornar se deu ou não positivo
+    return teste
+    }
+}
+
+var x=model_A()
+
+viz.table(Infer(x))
+
+
+Pergunta 2
+
+var model_A=function(){
+  
+    var prob_ter_covid_população=flip(0.01) // probabilidade de ter covid na população é 1%
+
+    // de seguida vou testar se o sujeeito tem covid, quando tem 70% deu positivo e tem covid e 30% tem covid e deu negativo, dos que não tem covid 10%  deu positivo e os outros 90% deu negativo e não tem covid
+    var teste= prob_ter_covid_população ?(flip(0.7)? 'Deu positivo':'Deu negativo'):(flip(0.1)? 'Deu positivo':'Deu negativo' )
+    
+   // só pretendo retornar se deu ou não positivo
+    return teste
+    
+}
+
+
+var model_B=function(){
+  
+    var prob_ter_covid_população=flip(0.01) // probabilidade de ter covid na população é 1%
+
+    // de seguida vou testar se o sujeeito tem covid, quando tem 90% deu positivo e tem covid e 10% tem covid e deu negativo, dos que não tem covid 1%  deu positivo e os outros 99% deu negativo e não tem covid
+    var teste= prob_ter_covid_população ?(flip(0.9)? 'Deu positivo':'Deu negativo'):(flip(0.01)? 'Deu positivo':'Deu negativo' )
+    
+   // só pretendo retornar se deu ou não positivo
+    return teste
+    
+}
+
+
+// podem só olhar para esta função abaixo e esqucer as de cima, as de cima só serviram para fazer Debug de umas coisas
+
+// todos ligam para a saude 24, seja os que deram positivos ou negativos
+// tem de se dar o histograma dos positivos e negativos
+// verifico se a pessoa tem covid ou não, crio variaveis da realização do teste A e do testeB, e no fim verifico se faz parte dos 80% que fez o teste A ou os 20% que fez o teste B
+var model_saude_24=function(){
+  return function(){
+   
+    var prob_ter_covid_população=flip(0.01) // probabilidade de ter covid na população é 1%
+    
+    var testeA= prob_ter_covid_população ?(flip(0.7)? 'Deu positivo':'Deu negativo'):(flip(0.1)? 'Deu positivo':'Deu negativo' )
+    
+    var testeB= prob_ter_covid_população ?(flip(0.9)? 'Deu positivo':'Deu negativo'):(flip(0.01)? 'Deu positivo':'Deu negativo' )
+    
+    var testes=flip(0.8) ?testeA:testeB 
+ 
+    return testes
+  }
+}
+
+var x=model_saude_24()
+
+viz.table(Infer(x))
+
+
+Pergunta 3:
+
+~~~~
+// apartir desta pergunta as minhas varaiveis são true e false, por uma questão de ligibilidade
+// mas por exemplo no testeA, faz exatamente o que se fez na pergunta 1, apenas evitei retornar 'Deu positivo' e 'Deu negativo' para True e False respetivamente
+
+var modelo3=function(){
+  var covid=flip(0.01) // probabilidade de ter covid na população é 1%
+  var testeA= covid ?flip(0.7):flip(0.1)
+  
+  condition(testeA)
+  return covid
+}
+
+viz.table(Infer(modelo3))
+~~~~
+
+Pergunta 4.1
+
+~~~~
+var modelo4_1=function(){
+  var covid=flip(0.01) // probabilidade de ter covid na população é 1%
+  var testeB= covid ?flip(0.9):flip(0.01)
+  var testeA= covid ?flip(0.7):flip(0.1)
+  var testes=flip(0.8) ?testeA:testeB 
+  condition(testes)
+  return covid
+}
+
+viz.table(Infer(modelo4_1))
+
+
+Pergunta 4.2:
+
+var modelo4_2=function(){
+  var covid=flip(0.01) // probabilidade de ter covid na população é 1%
+  var testeB= covid ?flip(0.9):flip(0.01)
+  var testeA= covid ?flip(0.7):flip(0.1)
+  var fez_teste_A=flip(0.8)
+  var testes=fez_teste_A ?testeA:testeB 
+  
+  condition(testes)
+  return fez_teste_A
+}
+
+viz.table(Infer(modelo4_2))
+
+
+Pergunta 4.3:
+
+
+var modelo4_3=function(){
+  var covid=flip(0.01) // probabilidade de ter covid na população é 1%
+  var testeB= covid ?flip(0.9):flip(0.01)
+  var testeA= covid ?flip(0.7):flip(0.1)
+  var fez_teste_A=flip(0.8)
+  var testes=fez_teste_A ?testeA:testeB 
+  
+  condition(testes && covid)
+  return fez_teste_A 
+}
+
+viz.table(Infer(modelo4_3))

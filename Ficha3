@@ -12,7 +12,7 @@ var model_A=function(){
     // de seguida vou testar se o sujeeito tem covid, quando tem 70% deu positivo e tem covid e 30% tem covid e deu negativo, dos que não tem covid 10%  deu positivo e os outros 90% deu negativo e não tem covid
     var teste= prob_ter_covid_população ?(flip(0.7)? 'Deu positivo':'Deu negativo'):(flip(0.1)? 'Deu positivo':'Deu negativo' )
     
-   // só pretendo retornar se deu ou não positivo
+   // penso que a questão estivesse a pedir isto de retorno, não compreendi muito bem a ideia do "histograma dos positivos"
     return teste
     }
 }
